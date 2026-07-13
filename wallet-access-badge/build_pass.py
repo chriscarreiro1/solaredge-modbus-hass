@@ -16,6 +16,7 @@ from pathlib import Path
 import yaml
 
 from generate_assets import generate_all
+from preview import write_preview
 
 ROOT = Path(__file__).resolve().parent
 
@@ -159,9 +160,10 @@ def create_pkpass(work_dir: Path, output: Path) -> None:
                 zf.write(path, arcname=path.name)
 
 
-def build(config_path: Path | None = None, unsigned: bool = False) -> Path:
+def build(config_path: Path | None = None, unsigned: bool = False) -> tuple[Path, Path]:
     config = load_config(config_path or ROOT / "config.yaml")
     output = ROOT / config.get("output", "AccessBadge.pkpass")
+    preview_path = ROOT / "preview.html"
 
     with tempfile.TemporaryDirectory(prefix="pkpass-") as tmp:
         work_dir = Path(tmp)
@@ -174,6 +176,8 @@ def build(config_path: Path | None = None, unsigned: bool = False) -> Path:
         )
         # Optional hand-crafted overrides in assets/
         overlay_custom_assets(assets_dir, work_dir)
+
+        write_preview(config, work_dir, preview_path)
 
         pass_json = build_pass_json(config)
         (work_dir / "pass.json").write_text(
@@ -197,7 +201,7 @@ def build(config_path: Path | None = None, unsigned: bool = False) -> Path:
 
         create_pkpass(work_dir, output)
 
-    return output
+    return output, preview_path
 
 
 def main() -> None:
@@ -205,9 +209,12 @@ def main() -> None:
     config_arg = next((a for a in sys.argv[1:] if not a.startswith("-")), None)
     config_path = Path(config_arg) if config_arg else ROOT / "config.yaml"
 
-    output = build(config_path, unsigned=unsigned)
+    output, preview_path = build(config_path, unsigned=unsigned)
     print(f"Created: {output}")
+    print(f"Preview: {preview_path}")
     print(f"Size:    {output.stat().st_size:,} bytes")
+    print("\nOpen the preview in Safari:")
+    print(f"  open {preview_path}")
     if unsigned or not all(
         (ROOT / p).exists()
         for p in (
@@ -217,7 +224,7 @@ def main() -> None:
         )
     ):
         print("\nTo install on iPhone you must sign with Apple Developer certificates.")
-        print("See wallet-access-badge/README.md for setup instructions.")
+        print("See README.md → Signing for iPhone.")
 
 
 if __name__ == "__main__":

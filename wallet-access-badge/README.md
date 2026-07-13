@@ -12,7 +12,9 @@ Build a single `.pkpass` file you can share via iMessage or AirDrop. The pass us
 
 ```bash
 cd wallet-access-badge
-pip3 install -r requirements.txt
+
+# Install for the same python3 you'll run (important on macOS)
+python3 -m pip install -r requirements.txt
 
 # Edit your badge details
 nano config.yaml
@@ -22,6 +24,17 @@ python3 build_pass.py --unsigned
 ```
 
 Output: `AccessBadge.pkpass`
+
+## Preview on your Mac (no Apple cert needed)
+
+```bash
+cd ~/solaredge-modbus-hass/wallet-access-badge
+python3 -m pip install -r requirements.txt
+python3 build_pass.py --unsigned
+open preview.html
+```
+
+That opens a Safari mock of the **pass front** and **info (ⓘ)** screens so you can judge the look before signing.
 
 ## Customize your badge
 
@@ -36,48 +49,74 @@ Edit `config.yaml`:
 
 Replace placeholder images by dropping PNGs into `assets/` (see `assets/README.md`).
 
-## Install on iPhone (requires Apple Developer)
+## Signing for iPhone (step-by-step)
 
-Apple Wallet **only accepts signed passes**. You need:
+Apple Wallet **only installs signed** `.pkpass` files. You need an [Apple Developer Program](https://developer.apple.com/programs/) membership ($99/year).
 
-1. An [Apple Developer Program](https://developer.apple.com/programs/) membership ($99/year)
-2. A **Pass Type ID** certificate from [Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources/identifiers/list/passTypeId)
+### 1. Create a Pass Type ID
 
-### One-time certificate setup
+1. Open [Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources/identifiers/list/passTypeId)
+2. Click **Identifiers** → **+**
+3. Choose **Pass Type IDs** → Continue
+4. Description: `Access Badge`
+5. Identifier: `pass.com.yourname.accessbadge` (must start with `pass.`)
+6. Register
 
-1. **Create a Pass Type ID**  
-   Identifiers → Pass Type IDs → `+`  
-   Example: `pass.com.yourname.accessbadge`
+### 2. Create the certificate
 
-2. **Create a certificate** for that Pass Type ID and download it.
+1. Still in the portal → **Certificates** → **+**
+2. Under Services choose **Pass Type ID Certificate** → Continue
+3. Select the Pass Type ID you just created
+4. Follow the CSR steps:
+   - On your Mac: open **Keychain Access** → menu **Keychain Access → Certificate Assistant → Request a Certificate From a Certificate Authority…**
+   - Email = yours, Common Name = `Access Badge`, choose **Saved to disk**
+   - Upload that `.certSigningRequest` in the portal
+5. Download the resulting `.cer` and double-click it to install into **login** keychain
 
-3. **Export from Keychain (Mac)**  
-   - Import the `.cer` into Keychain Access  
-   - Expand the cert, select cert + private key → Export as `.p12`  
-   - Convert to PEM:
+### 3. Export PEM files into this project
 
-   ```bash
-   openssl pkcs12 -in Certificates.p12 -clcerts -nokeys -out certs/pass.pem
-   openssl pkcs12 -in Certificates.p12 -nocerts -nodes -out certs/pass.key
-   ```
+1. Open **Keychain Access** → **My Certificates**
+2. Find the Pass Type ID cert (name looks like `Pass Type ID: pass.com…`)
+3. Click the disclosure triangle so the private key is visible
+4. Select the cert (and key) → right-click → **Export 2 items…** → format **Personal Information Exchange (.p12)**
+5. Set a temporary password, save as `Certificates.p12` on Desktop
+6. In Terminal:
 
-4. **Download WWDR intermediate**  
-   Get the current [Apple WWDR certificate](https://www.apple.com/certificateauthority/) (G4) and save as `certs/wwdr.pem`.
+```bash
+cd ~/solaredge-modbus-hass/wallet-access-badge
+mkdir -p certs
 
-5. **Update `config.yaml`** with your real values:
+# Convert the .p12 (enter the export password when asked)
+openssl pkcs12 -in ~/Desktop/Certificates.p12 -clcerts -nokeys -out certs/pass.pem -legacy
+openssl pkcs12 -in ~/Desktop/Certificates.p12 -nocerts -nodes -out certs/pass.key -legacy
+```
 
-   ```yaml
-   pass:
-     pass_type_identifier: "pass.com.yourname.accessbadge"
-     team_identifier: "ABCDE12345"   # 10-char Team ID from developer.apple.com
-   ```
+If `-legacy` errors on older OpenSSL, drop that flag and try again.
 
-6. **Build signed pass:**
+### 4. Download Apple’s WWDR intermediate
 
-   ```bash
-   python3 build_pass.py
-   ```
+```bash
+curl -L -o certs/AppleWWDRCAG4.cer https://www.apple.com/certificateauthority/AppleWWDRCAG4.cer
+openssl x509 -inform DER -in certs/AppleWWDRCAG4.cer -out certs/wwdr.pem
+```
 
+### 5. Put your IDs in `config.yaml`
+
+On [Membership details](https://developer.apple.com/account#MembershipDetailsCard) copy your **Team ID**.
+
+```yaml
+pass:
+  pass_type_identifier: "pass.com.yourname.accessbadge"  # exact ID from step 1
+  team_identifier: "ABCDE12345"                           # your 10-char Team ID
+```
+
+### 6. Build signed + AirDrop to iPhone
+
+```bash
+python3 build_pass.py
+open .
+# AirDrop AccessBadge.pkpass to your iPhone → tap → Add
+```
 ## Share via text
 
 1. AirDrop or iMessage the `.pkpass` file to your iPhone.

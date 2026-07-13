@@ -6,6 +6,7 @@ certs/*.cer
 
 # Built pass output
 *.pkpass
+preview.html
 
 # Python
 __pycache__/

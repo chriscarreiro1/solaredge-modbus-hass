@@ -43,6 +43,7 @@ def build_pass_json(config: dict) -> dict:
         "foregroundColor": p["foreground_color"],
         "backgroundColor": p["background_color"],
         "labelColor": p["label_color"],
+        "suppressStripShine": p.get("suppress_strip_shine", True),
         "barcodes": [
             {
                 "format": badge.get("barcode_format", "PKBarcodeFormatQR"),
@@ -171,6 +172,7 @@ def build(config_path: Path | None = None, unsigned: bool = False) -> Path:
             guest_name=config["badge"]["guest_name"],
             logo_text=config["pass"]["logo_text"],
         )
+        # Optional hand-crafted overrides in assets/
         overlay_custom_assets(assets_dir, work_dir)
 
         pass_json = build_pass_json(config)
@@ -219,4 +221,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-  main()
+    main()

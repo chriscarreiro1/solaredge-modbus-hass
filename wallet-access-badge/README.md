@@ -1,6 +1,6 @@
 # Apple Wallet Access Badge Builder
 
-Build a single `.pkpass` file you can share via iMessage, AirDrop, or email. When opened on iPhone, it adds to Apple Wallet and the **info (ⓘ) screen** matches the Disney MagicMobile layout:
+Build a single `.pkpass` file you can share via iMessage or AirDrop. The pass uses **similar** Disney MagicMobile styling — dark navy theme, space-battle pass front, and an info screen with guest details and QR code. Not a pixel-perfect replica; close enough for a personal access badge.
 
 - Pass thumbnail and title at the top
 - Phone and website quick-action buttons

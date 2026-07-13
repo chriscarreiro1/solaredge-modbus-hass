@@ -1,6 +1,6 @@
 # Optional custom images
 
-Drop PNG files here to override the auto-generated placeholders. Apple expects these names:
+Assets are **auto-generated** each build to look similar to Disney MagicMobile (navy space scene, guest name footer, dark info screen). Drop PNGs here only if you want to override specific images:
 
 | File | Size (1x / @2x / @3x) |
 |------|------------------------|

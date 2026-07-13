@@ -12,7 +12,9 @@ Build a single `.pkpass` file you can share via iMessage or AirDrop. The pass us
 
 ```bash
 cd wallet-access-badge
-pip3 install -r requirements.txt
+
+# Install for the same python3 you'll run (important on macOS)
+python3 -m pip install -r requirements.txt
 
 # Edit your badge details
 nano config.yaml

@@ -88,9 +88,15 @@ Apple Wallet **only accepts signed passes**. You need:
 
 ## Info screen layout
 
-The builder uses Apple's `generic` pass style with these mappings:
+The builder uses Apple's `storeCard` pass style so a full-width **strip image** fills the pass front (the Millennium Falcon artwork). The info (ⓘ) screen uses `backFields`:
 
 ```
+┌─────────────────────────────┐
+│  [strip — pass front art]   │  ← strip.png (before tapping ⓘ)
+│  Christopher C              │
+└─────────────────────────────┘
+
+Info (ⓘ) screen:
 ┌─────────────────────────────┐
 │  [thumbnail]                │
 │  Disney MagicMobile Pass    │  ← logoText + primaryFields

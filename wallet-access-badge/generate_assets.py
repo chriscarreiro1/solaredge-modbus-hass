@@ -61,4 +61,4 @@ def generate_all(out_dir: Path, guest_name: str, logo_text: str) -> None:
     generate_icon(out_dir)
     short_logo = logo_text.split()[-2] if " " in logo_text else logo_text[:12]
     generate_logo(out_dir, short_logo)
-    generate_thumbnail(out_dir, guest_name)
+    # thumbnail/strip are supplied via assets/ when using a custom pass front image

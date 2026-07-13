@@ -11,14 +11,15 @@ pass:
   logo_text: "Disney MagicMobile Pass"
   description: "Access Badge"
 
-  # Dark theme matching Disney MagicMobile style
+  # storeCard = full-width strip image on pass front (Disney MagicMobile style)
+  style: "storeCard"
   foreground_color: "rgb(255, 255, 255)"
   background_color: "rgb(28, 28, 30)"
   label_color: "rgb(174, 174, 178)"
 
 badge:
   guest_name: "Christopher C"
-  affiliation: "DVC ND"
+  affiliation: "DVC Y"
   id: "03A1762410A8"
 
   # QR code payload (usually same as ID)

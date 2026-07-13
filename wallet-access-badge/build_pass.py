@@ -30,6 +30,7 @@ def build_pass_json(config: dict) -> dict:
     badge = config["badge"]
     contact = config.get("contact", {})
     app = config.get("associated_app", {})
+    style = p.get("style", "storeCard")
 
     pass_doc: dict = {
         "formatVersion": 1,
@@ -42,23 +43,6 @@ def build_pass_json(config: dict) -> dict:
         "foregroundColor": p["foreground_color"],
         "backgroundColor": p["background_color"],
         "labelColor": p["label_color"],
-        "generic": {
-            "primaryFields": [
-                {
-                    "key": "title",
-                    "label": "",
-                    "value": p["logo_text"],
-                }
-            ],
-            "secondaryFields": [
-                {
-                    "key": "subtitle",
-                    "label": "",
-                    "value": p["description"],
-                }
-            ],
-            "backFields": [],
-        },
         "barcodes": [
             {
                 "format": badge.get("barcode_format", "PKBarcodeFormatQR"),
@@ -69,32 +53,36 @@ def build_pass_json(config: dict) -> dict:
         ],
     }
 
-    # Quick-action icons (phone + compass) on the info screen
+    back_fields: list[dict] = []
     if contact.get("phone"):
-        pass_doc["generic"]["backFields"].append(
-            {
-                "key": "phone",
-                "label": "",
-                "value": contact["phone"],
-            }
-        )
+        back_fields.append({"key": "phone", "label": "", "value": contact["phone"]})
     if contact.get("website"):
-        pass_doc["generic"]["backFields"].append(
-            {
-                "key": "website",
-                "label": "",
-                "value": contact["website"],
-            }
-        )
-
-    # Key-value rows matching the Disney info layout
-    pass_doc["generic"]["backFields"].extend(
+        back_fields.append({"key": "website", "label": "", "value": contact["website"]})
+    back_fields.extend(
         [
             {"key": "guest_name", "label": "Guest Name", "value": badge["guest_name"]},
             {"key": "affiliation", "label": "Affiliation", "value": badge["affiliation"]},
             {"key": "badge_id", "label": "ID", "value": badge["id"]},
         ]
     )
+
+    if style == "storeCard":
+        # Strip image fills the pass front (Millennium Falcon artwork + name footer).
+        pass_doc["storeCard"] = {
+            "primaryFields": [],
+            "secondaryFields": [],
+            "backFields": back_fields,
+        }
+    else:
+        pass_doc["generic"] = {
+            "primaryFields": [
+                {"key": "title", "label": "", "value": p["logo_text"]},
+            ],
+            "secondaryFields": [
+                {"key": "subtitle", "label": "", "value": p["description"]},
+            ],
+            "backFields": back_fields,
+        }
 
     if app.get("store_identifier"):
         pass_doc["associatedStoreIdentifiers"] = [int(app["store_identifier"])]

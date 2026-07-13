@@ -3,7 +3,7 @@
 
 pass:
   # Required — must match your Apple Developer Pass Type ID certificate
-  pass_type_identifier: "pass.com.chris.accessbadge"
+  pass_type_identifier: "pass.com.chris.accessPass"
   team_identifier: "5AUT83675V"
 
   # Shown at the top of the info (ⓘ) screen

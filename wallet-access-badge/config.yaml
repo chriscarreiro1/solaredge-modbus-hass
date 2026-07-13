@@ -1,0 +1,54 @@
+# Apple Wallet Access Badge configuration
+# Edit these values, then run: python3 build_pass.py
+
+pass:
+  # Required — must match your Apple Developer Pass Type ID certificate
+  pass_type_identifier: "pass.com.example.accessbadge"
+  team_identifier: "XXXXXXXXXX"
+
+  # Shown at the top of the info (ⓘ) screen
+  organization_name: "Walt Disney World"
+  logo_text: "Disney MagicMobile Pass"
+  description: "Access Badge"
+
+  # storeCard = full-width strip image on pass front (Disney MagicMobile style)
+  style: "storeCard"
+  # Dark navy theme — similar to Disney MagicMobile
+  foreground_color: "rgb(255, 255, 255)"
+  background_color: "rgb(14, 22, 52)"
+  label_color: "rgb(170, 174, 182)"
+  suppress_strip_shine: true
+
+badge:
+  guest_name: "Christopher C"
+  affiliation: "DVC Y"
+  id: "03A1762410A8"
+
+  # QR code payload (usually same as ID)
+  barcode_message: "03A1762410A8"
+  barcode_format: "PKBarcodeFormatQR"  # QR | PDF417 | Aztec | Code128
+
+# Quick-action buttons on the info screen (phone + website icons)
+contact:
+  phone: "+1-407-939-5277"
+  website: "https://disneyworld.disney.go.com"
+
+# Companion iOS app card ("Open" button on info screen)
+# Find App Store IDs at https://apps.apple.com — My Disney Experience = 547389937
+associated_app:
+  store_identifier: 547389937
+  launch_url: "https://disneyworld.disney.go.com"
+
+# Optional: show pass on lock screen near a location
+# locations:
+#   - latitude: 28.3772
+#     longitude: -81.5497
+#     relevant_text: "Welcome to the parks!"
+
+signing:
+  # Paths relative to wallet-access-badge/
+  certificate: "certs/pass.pem"
+  private_key: "certs/pass.key"
+  wwdr_certificate: "certs/wwdr.pem"
+
+output: "AccessBadge.pkpass"

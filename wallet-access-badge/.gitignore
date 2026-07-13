@@ -1,0 +1,13 @@
+# Signing certificates — never commit real keys
+certs/*.pem
+certs/*.key
+certs/*.p12
+certs/*.cer
+
+# Built pass output
+*.pkpass
+
+# Python
+__pycache__/
+*.pyc
+.venv/
